@@ -4,13 +4,18 @@ services:
 
   db:
     image: postgres
+    container_name: db
     restart: always
     environment:
       POSTGRES_PASSWORD: kraken
       POSTGRES_USER: kraken
     ports:
-          - 5432:5432
+          - 5432:5432 # todo port does not need to be external
 
-#  db_migrate:
-#    command:
-
+  db-migrate:
+    container_name: db-migrate
+    build: ./profile/migration/
+    depends_on:
+      - db
+    links:
+      - db
