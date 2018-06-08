@@ -1,0 +1,5 @@
+PGUSER=kraken
+PGHOST=db
+PGPASSWORD=kraken
+PGDATABASE=kraken
+PGPORT=5432
