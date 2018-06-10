@@ -25,13 +25,14 @@ const queryForResult = async (q, data, handler) => {
   return Promise.reject()
 }
 
-const processDepositTransactions = async function (custMap) {
+const processDepositTransactions = async function () {
+  const custMap = await queryForResult('SELECT name, address FROM customer AS c ORDER BY c.weight;', undefined, handleCustomerResponse);
   const q = 'SELECT t.amount FROM transaction AS t WHERE t.confirmations > 5 AND t.address = $1;'
   const depMap = await Promise.all(Object.keys(custMap).map((a) => {
       return Promise.resolve().then(() => {
         return queryForResult(q, [a], handleDepositResponse)
       })
-    })).then((res) => { //reduce Promise.all array into a map
+    })).then((res) => {
     return res.reduce((acc, cv) => {
       const key = Object.keys(cv)[0];
       acc[key] = cv[key]
@@ -46,23 +47,26 @@ const processDepositTransactions = async function (custMap) {
 };
 
 const processDepositsWithoutReference = async () => {
-
+  const res = await queryForResult('SELECT t.amount FROM transaction t WHERE NOT EXISTS(SELECT * FROM customer c WHERE t.address = c.address);', undefined, (res) => res.rows)
+  const txnSum = res.reduce((acc, cv) => {
+    return round(acc + cv.amount, 9)
+  }, 0);
+  return `Deposited without reference: count=${res.length} sum=${txnSum}`
 }
 
 const processSmallestValidDeposit = async () => {
-
+  return `Smallest valid deposit: ${await queryForResult('SELECT MIN(amount) FROM transaction t WHERE t.confirmations > 5;', undefined, (res) => res.rows[0].min)}`
 }
 
 const processLargestValidDeposit = async () => {
-
+  return `Largest valid deposit: ${await queryForResult('SELECT MAX(amount) FROM transaction t WHERE t.confirmations > 5;', undefined, (res) => res.rows[0].max)}`
 }
 
 const process = async () => {
-  const customerMap = await queryForResult('SELECT name, address FROM customer AS c ORDER BY c.weight;', undefined, handleCustomerResponse);
-  dataString = await processDepositTransactions(customerMap);
-  dataString.concat(`\n${processDepositsWithoutReference()}`)
-  dataString.concat(`\n${processSmallestValidDeposit()}`)
-  dataString.concat(`\n${processLargestValidDeposit()}`)
+  dataString = await processDepositTransactions()
+  dataString = dataString.concat(
+      `${await processDepositsWithoutReference()}\n`, `${await processSmallestValidDeposit()}\n`, `${await processLargestValidDeposit()}\n`
+  );
   console.log(dataString)
 }
 

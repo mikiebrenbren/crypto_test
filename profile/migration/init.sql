@@ -4,8 +4,8 @@ CREATE SCHEMA IF NOT EXISTS kraken AUTHORIZATION kraken;
 -- Add permissions to the admin user and application role
 GRANT ALL ON SCHEMA kraken TO kraken;
 
-DROP TABLE IF EXISTS transaction;
 DROP TABLE IF EXISTS customer;
+DROP TABLE IF EXISTS transaction;
 
 CREATE TABLE transaction
 (
