@@ -5,6 +5,7 @@ CREATE SCHEMA IF NOT EXISTS kraken AUTHORIZATION kraken;
 GRANT ALL ON SCHEMA kraken TO kraken;
 
 DROP TABLE IF EXISTS transaction;
+DROP TABLE IF EXISTS customer;
 
 CREATE TABLE transaction
 (
@@ -17,7 +18,7 @@ CREATE TABLE transaction
   tx_id               VARCHAR(128)                                                       NOT NULL,
   block_index         INT                                                                NOT NULL,
   label               VARCHAR(256)                                                       NULL,
-  category            VARCHAR(16),
+  category            VARCHAR(16)                                                        NOT NULL,
   vout                INT                                                                NOT NULL,
   block_time          TIMESTAMP                                                          NULL,
   time                TIMESTAMP                                                          NULL,
@@ -26,4 +27,12 @@ CREATE TABLE transaction
   involves_watch_only BOOLEAN                                                            NOT NULL,
   wallet_conflicts    BOOLEAN                                                            NOT NULL DEFAULT FALSE,
   removed             BOOLEAN                                                            NOT NULL DEFAULT FALSE
+);
+
+CREATE TABLE customer
+(
+  customer_id         BIGSERIAL PRIMARY KEY                                              NOT NULL,
+  name                VARCHAR(256)                                                       NULL,
+  address             VARCHAR(64)                                                        NOT NULL,
+  weight              INT                                                                NOT NULL
 );

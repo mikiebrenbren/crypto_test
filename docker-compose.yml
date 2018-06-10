@@ -33,6 +33,12 @@ services:
     env_file:
       - profile/data/_env
 
-#  transaction-processor:
-#    container_name: transaction-processor
-#    build: .
+  transaction-processor:
+    container_name: transaction-processor
+    build: .
+    depends_on:
+        - db-data
+    env_file:
+        - profile/data/_env
+    links:
+        - db

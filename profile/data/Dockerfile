@@ -1,12 +1,13 @@
 FROM node:10
 
 COPY package.json /src/package.json
-COPY ./src/insert-data.js /src/insert-data.js
+COPY ./src/data/insert-data.js /src/data/insert-data.js
 COPY ./src/pg-client.js /src/pg-client.js
-COPY ./src/transactions-1.json /src/transactions-1.json
-COPY ./src/transactions-2.json /src/transactions-2.json
+COPY ./src/data/transactions-1.json /src/data/transactions-1.json
+COPY ./src/data/transactions-2.json /src/data/transactions-2.json
+COPY ./src/data/customers.json /src/data/customers.json
 
 RUN cd /src && npm install;
 
 WORKDIR /src
-CMD ["node", "insert-data.js"]
+CMD ["node", "data/insert-data.js"]
