@@ -6,8 +6,6 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
-    "lodash": "^4.17.10",
-    "npm": "^6.1.0",
     "pg": "^7.4.3"
   }
 }

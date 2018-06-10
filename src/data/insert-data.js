@@ -32,7 +32,7 @@ const insertData = async (query, data) => {
 
 const reduceTransactions = (transactions) => {
   return transactions.reduce((acc, txns) => {
-    //todo handled removed blocks
+    // handled removed blocks ...
     const lastBlock = txns.lastblock;
     return acc.concat(txns.transactions.map((txn) => {
       //ordered

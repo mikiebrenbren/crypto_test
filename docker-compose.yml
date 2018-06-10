@@ -7,38 +7,18 @@ services:
     container_name: db
     restart: always
     env_file:
-      - profile/migration/_env
+      - ./kraken_env
+#    volumes:
+#          - ./profile/migration/init.sql:/docker-entrypoint-initdb.d/
     ports:
-          - 5432:5432 # todo port does not need to be external
-
-  db-migrate:
-    container_name: db-migrate
-    build: ./profile/migration/
-    env_file:
-          - profile/migration/_env
-    depends_on:
-      - db
-    links:
-      - db
-
-  db-data:
-    container_name: db-data
-    build:
-      context: .
-      dockerfile: ./profile/data/Dockerfile
-    depends_on:
-      - db-migrate
-    links:
-      - db
-    env_file:
-      - profile/data/_env
+          - 5432:5432 # port does not need to be external but makes looking at data easier
 
   transaction-processor:
     container_name: transaction-processor
     build: .
     depends_on:
-        - db-data
+        - db
     env_file:
-        - profile/data/_env
+        - _env
     links:
         - db

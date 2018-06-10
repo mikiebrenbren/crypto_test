@@ -2,8 +2,8 @@ const queryClient = require('./pg-client')
 
 let dataString = '\n\n\n\n\n\n\n\n\n\n'
 
-function round(value, decimals) {
-  return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
+function round(value) {
+  return Number(Math.round(value+'e-9')+'e-9');
 }
 
 const handleDepositResponse = (res, data) => {
@@ -25,7 +25,7 @@ const queryForResult = async (q, data, handler) => {
   return Promise.reject()
 }
 
-const processDepositTransactions = async function () {
+const processDepositTransactions = async () => {
   const custMap = await queryForResult('SELECT name, address FROM customer AS c ORDER BY c.weight;', undefined, handleCustomerResponse);
   const q = 'SELECT t.amount FROM transaction AS t WHERE t.confirmations > 5 AND t.address = $1;'
   const depMap = await Promise.all(Object.keys(custMap).map((a) => {
@@ -41,7 +41,7 @@ const processDepositTransactions = async function () {
   });
 
   return Object.keys(custMap).reduce((acc, cv) => {
-    return acc.concat(`Deposited for ${custMap[cv]} count=${depMap[cv].length} sum=${round(depMap[cv].reduce((acc, cv) => cv.amount + acc, 0), 9)}\n`)
+    return acc.concat(`Deposited for ${custMap[cv]} count=${depMap[cv].length} sum=${round(depMap[cv].reduce((acc, cv) => cv.amount + acc, 0))}\n`)
   }, dataString);
 
 };
@@ -49,23 +49,23 @@ const processDepositTransactions = async function () {
 const processDepositsWithoutReference = async () => {
   const res = await queryForResult('SELECT t.amount FROM transaction t WHERE NOT EXISTS(SELECT * FROM customer c WHERE t.address = c.address);', undefined, (res) => res.rows)
   const txnSum = res.reduce((acc, cv) => {
-    return round(acc + cv.amount, 9)
+    return round(acc + cv.amount)
   }, 0);
   return `Deposited without reference: count=${res.length} sum=${txnSum}`
 }
 
 const processSmallestValidDeposit = async () => {
-  return `Smallest valid deposit: ${round(await queryForResult('SELECT MIN(amount) FROM transaction t WHERE t.confirmations > 5;', undefined, (res) => res.rows[0].min), 9)}`
+  return `Smallest valid deposit: ${round(await queryForResult('SELECT MIN(amount) FROM transaction t WHERE t.confirmations > 5;', undefined, (res) => res.rows[0].min))}`
 }
 
 const processLargestValidDeposit = async () => {
-  return `Largest valid deposit: ${round(await queryForResult('SELECT MAX(amount) FROM transaction t WHERE t.confirmations > 5;', undefined, (res) => res.rows[0].max), 9)}`
+  return `Largest valid deposit: ${round(await queryForResult('SELECT MAX(amount) FROM transaction t WHERE t.confirmations > 5;', undefined, (res) => res.rows[0].max))}`
 }
 
 const process = async () => {
   dataString = await processDepositTransactions()
   dataString = dataString.concat(
-      `${await processDepositsWithoutReference()}\n`, `${await processSmallestValidDeposit()}\n`, `${await processLargestValidDeposit()}\n`
+      `${await processDepositsWithoutReference()}\n`, `${await processSmallestValidDeposit()}\n`, `${await processLargestValidDeposit()}`
   );
   console.log(dataString)
 }
