@@ -55,11 +55,11 @@ const processDepositsWithoutReference = async () => {
 }
 
 const processSmallestValidDeposit = async () => {
-  return `Smallest valid deposit: ${await queryForResult('SELECT MIN(amount) FROM transaction t WHERE t.confirmations > 5;', undefined, (res) => res.rows[0].min)}`
+  return `Smallest valid deposit: ${round(await queryForResult('SELECT MIN(amount) FROM transaction t WHERE t.confirmations > 5;', undefined, (res) => res.rows[0].min), 9)}`
 }
 
 const processLargestValidDeposit = async () => {
-  return `Largest valid deposit: ${await queryForResult('SELECT MAX(amount) FROM transaction t WHERE t.confirmations > 5;', undefined, (res) => res.rows[0].max)}`
+  return `Largest valid deposit: ${round(await queryForResult('SELECT MAX(amount) FROM transaction t WHERE t.confirmations > 5;', undefined, (res) => res.rows[0].max), 9)}`
 }
 
 const process = async () => {
