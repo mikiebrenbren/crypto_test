@@ -1,6 +1,6 @@
 const queryClient = require('./pg-client')
 
-let dataString = '\n\n\n\n\n\n\n\n\n\n'
+let dataString = '*****************************************\n\n\n\n\n\n\n\n\n\n'
 
 function round(value) {
   return Number(Math.round(value+'e'+9)+'e-'+ 9);
@@ -67,7 +67,7 @@ module.exports = async () => {
   dataString = dataString.concat(
       `${await processDepositsWithoutReference()}\n`, `${await processSmallestValidDeposit()}\n`, `${await processLargestValidDeposit()}`
   );
-  console.log(dataString)
+  console.log(dataString.concat('\n*****************************************'))
   return Promise.resolve()
 }
 
