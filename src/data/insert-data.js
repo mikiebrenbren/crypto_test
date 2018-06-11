@@ -42,16 +42,8 @@ const reduceTransactions = (transactions) => {
 
 }
 
-//todo extract these into one function
-
-const insertTransactions = () => {
-  const q = `INSERT INTO transaction (amount, confirmations, address, last_block, block_hash, tx_id, block_index, label, category, vout, block_time, time, time_received, bip125_replaceable, involves_watch_only, wallet_conflicts, removed) VALUES ${generateValSql()};`
-  console.log('Inserting transaction data...')
-  return Promise.all(reduceTransactions([transactions1, transactions2]).map((rt) => {
-    return new Promise((resolve) => {
-      resolve(insertData(q, rt))
-    })
-  })).then(() => {
+const insertRecords = function (p) {
+  return Promise.all(p).then(() => {
     console.log('Transaction data insertion complete.')
     return Promise.resolve();
   }).catch((err) => {
@@ -60,22 +52,28 @@ const insertTransactions = () => {
   })
 }
 
+const createPromise = function (q, rt) {
+  return new Promise((resolve) => {
+    resolve(insertData(q, rt))
+  })
+}
+
+const insertTransactions = () => {
+  const q = `INSERT INTO transaction (amount, confirmations, address, last_block, block_hash, tx_id, block_index, label, category, vout, block_time, time, time_received, bip125_replaceable, involves_watch_only, wallet_conflicts, removed) VALUES ${generateValSql()};`
+  console.log('Inserting transaction data...')
+  return insertRecords(reduceTransactions([transactions1, transactions2]).map((rt) => {
+    return createPromise(q, rt)
+  }))
+}
+
 const insertCustomer = () => {
   const q = `INSERT INTO customer (name, address, weight) VALUES ($1, $2, $3)`;
   console.log('Inserting customer data...')
-  return Promise.all(Object.keys(customers).map((cv) => {
+  return insertRecords(Object.keys(customers).map((cv) => {
     return [customers[cv].name, cv, customers[cv].weight]
   }).map((rt) => {
-    return new Promise((resolve) => {
-      resolve(insertData(q, rt))
-    })
-  })).then(() => {
-    console.log('Customer data insertion complete.')
-    return Promise.resolve();
-  }).catch((err) => {
-    console.log(`Something went wrong ${JSON.stringify(err)}`)
-    process.exit(0)
-  })
+    return createPromise(q, rt)
+  }))
 
 }
 

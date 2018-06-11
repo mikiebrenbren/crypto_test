@@ -34,17 +34,17 @@ const processDepositTransactions = async () => {
       })
     })).then((res) => {
     return res.reduce((acc, cv) => {
-      const key = Object.keys(cv)[0];
+      const key = Object.keys(cv)[0]
       acc[key] = cv[key]
       return acc
     }, {})
-  });
+  })
 
   return Object.keys(custMap).reduce((acc, cv) => {
     return acc.concat(`Deposited for ${custMap[cv]} count=${depMap[cv].length} sum=${round(depMap[cv].reduce((acc, cv) => cv.amount + acc, 0))}\n`)
-  }, dataString);
+  }, dataString)
 
-};
+}
 
 const processDepositsWithoutReference = async () => {
   const res = await queryForResult('SELECT t.amount FROM transaction t WHERE NOT EXISTS(SELECT * FROM customer c WHERE t.address = c.address);', undefined, (res) => res.rows)
