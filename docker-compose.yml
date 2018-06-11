@@ -8,10 +8,6 @@ services:
     restart: always
     env_file:
       - ./kraken_env
-#    volumes:
-#          - ./profile/migration/init.sql:/docker-entrypoint-initdb.d/
-    ports:
-          - 5432:5432 # port does not need to be external but makes looking at data easier
 
   transaction-processor:
     container_name: transaction-processor

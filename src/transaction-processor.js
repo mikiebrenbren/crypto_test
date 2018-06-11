@@ -62,15 +62,14 @@ const processLargestValidDeposit = async () => {
   return `Largest valid deposit: ${round(await queryForResult('SELECT MAX(amount) FROM transaction t WHERE t.confirmations > 5;', undefined, (res) => res.rows[0].max))}`
 }
 
-const process = async () => {
+module.exports = async () => {
   dataString = await processDepositTransactions()
   dataString = dataString.concat(
       `${await processDepositsWithoutReference()}\n`, `${await processSmallestValidDeposit()}\n`, `${await processLargestValidDeposit()}`
   );
   console.log(dataString)
+  return Promise.resolve()
 }
-
-process()
 
 
 

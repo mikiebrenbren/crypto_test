@@ -15,5 +15,4 @@ COPY ./profile/start.sh /usr/local/bin/start.sh
 RUN cd /src && npm install;
 
 WORKDIR /src
-#CMD ["node", "transaction-processor.js"]
 CMD ["start.sh"]

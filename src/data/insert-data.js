@@ -77,12 +77,11 @@ const insertCustomer = () => {
 
 }
 
-const process  = async() => {
+module.exports = async () => {
   await insertTransactions()
   await insertCustomer()
+  return Promise.resolve()
 }
-
-process()
 
 
 
