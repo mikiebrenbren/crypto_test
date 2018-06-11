@@ -1,6 +1,6 @@
 const queryClient = require('./pg-client')
 
-let dataString = '*****************************************\n\n\n\n\n\n\n\n\n\n'
+let dataString = '\n\n\n\n\n\n\n\n\n*****************************************\n'
 
 function round(value) {
   return Number(Math.round(value+'e'+9)+'e-'+ 9);
